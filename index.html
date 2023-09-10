@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Grid map</title>
+
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css"
+    integrity="sha512-Zcn6bjR/8RZbLEpLIeOwNtzREBAJnUKESxces60Mpoj+2okopSAcSUIUOseddDm0cxnGQzxIR7vJgsLZbdLE3w=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+
+
+  <style>
+    #leaflet-map {
+      height: 600px;
+      width: 1200px;
+    }
+
+    #map-legend {
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    background-color: white;
+    border: 1px solid #888;
+    padding: 10px;
+    z-index: 1000;  /* Adjust if needed */
+}
+
+#map-legend div {
+    margin-bottom: 5px;
+}
+
+    </style>
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/MarkerCluster.Default.css" integrity="sha512-6ZCLMiYwTeli2rVh3XAPxy3YoR5fVxGdH/pz+KMCzRY2M65Emgkw00Yqmhh8qLGeYQ3LbVZGdmOX9KUjSKr0TA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/MarkerCluster.Default.min.css" integrity="sha512-fYyZwU1wU0QWB4Yutd/Pvhy5J1oWAwFXun1pt+Bps04WSe4Aq6tyHlT4+MHSJhD8JlLfgLuC4CbCnX5KHSjyCg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.0/jquery.min.js"
+    integrity="sha512-3gJwYpMe3QewGELv8k/BX9vcqhryRdzRMxVfq6ngyWXwo03GFEzjsUm8Q7RZcHPHksttq7/GFoxjCVUjkjvPdw=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"
+    integrity="sha512-BwHfrr4c9kmRkLw6iXFdzcdWV/PGkVgiIyIWLLlTSXzWQzxuSg4DiQUCpauz/EWjgk5TYQqX/kvn9pG1NpYfqg=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+  <script src="https://unpkg.com/leaflet-kmz@latest/dist/leaflet-kmz.js"></script>
+  <script src='https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/Leaflet.fullscreen.min.js'></script>
+  <link href='https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/leaflet.fullscreen.css' rel='stylesheet' />
+
+
+  <link rel="stylesheet" href="L.switchBasemap.css">
+  
+
+  <script type="text/javascript" src="L.switchBasemap.js"></script>
+
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.3/leaflet.markercluster.js" integrity="sha512-OFs3W4DIZ5ZkrDhBFtsCP6JXtMEDGmhl0QPlmWYBJay40TT1n3gt2Xuw8Pf/iezgW9CdabjkNChRqozl/YADmg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+</head>
+</head>
+
+
+
+<body>
+
+    <div id="leaflet-map"></div>
+
+    <div id="map-legend"></div>
+
+
+      <script>
+
+
+//Set the boundaries for webtiles
+var validBounds = L.latLngBounds(L.latLng(-90, -180), L.latLng(90, 180));
+
+
+// Create a Leaflet map and set the initial view
+var map = L.map('leaflet-map', {
+  maxBounds: validBounds,
+  zoomControl: false // default zoom control is on the left top.
+}).setView([40, 0], 2);
+
+L.control.scale({maxWidth: 150, imperial: false}).addTo(map);
+
+// Add customized zoom control to the map
+L.control.zoom({ position: 'bottomright' }).addTo(map);
+
+// Add fullscreen control to the map
+map.addControl(new L.Control.Fullscreen({ position: 'topright' }));
+
+
+// Define basemap layers with their respective properties
+new L.basemapsSwitcher([
+  {
+    layer: L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {
+      attribution: 'Tiles &copy; Esri'
+    }).setOpacity(0.99).addTo(map),//DEFAULT MAP
+    maxZoom: 18,
+    bounds: validBounds,
+    icon: 'img/terrain.jpeg',
+    name: 'Terrain'
+  },
+  {
+    layer: L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).setOpacity(0.75),
+    icon: 'img/topo.jpg',
+    bounds: validBounds,
+    name: 'OpenTopo'
+  },
+
+  {
+    layer: L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+      attribution: '&copy; <a href="https://stadiamaps.com/">Stadia Maps</a>, &copy; <a href="https://openmaptiles.org/">OpenMapTiles</a> &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors'
+    }).setOpacity(0.8),
+    maxZoom: 21,
+    icon: 'img/satellite.jpg',
+    bounds: validBounds,
+    name: 'Satellite'
+  },
+  {
+    layer: L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: 'Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors)'
+    }),
+    icon: 'img/osm.png',
+    bounds: validBounds,
+    name: 'OSM'
+  },
+], { position: 'bottomleft' }).addTo(map);
+
+let rectangles = [];
+let markersCluster = L.markerClusterGroup();  // Initialize the marker cluster group
+
+fetch('https://xeno-canto.org/api/2/recordings?query=otus%20scops')
+.then(response => response.json())
+.then(data => {
+    // Create markers for each recording
+    data.recordings.forEach(recording => {
+        if (recording.lat && recording.lng && !isNaN(recording.lat) && !isNaN(recording.lng)) {
+            let marker = L.marker([recording.lat, recording.lng])
+            .bindPopup(recording.en + '<br>' + recording.cnt + '<br><a href="https://' + recording.url + '" target="_blank">Listen</a>');
+            markersCluster.addLayer(marker);
+        }
+    });
+
+    // Setup the grid
+    const gridSize = 0.5;  // Adjusted grid size
+    let gridCounts = {};
+
+    // Count recordings in each grid
+    data.recordings.forEach(recording => {
+        if (recording.lat && recording.lng && !isNaN(recording.lat) && !isNaN(recording.lng)) {
+            const gridLat = Math.floor(recording.lat / gridSize) * gridSize;
+            const gridLng = Math.floor(recording.lng / gridSize) * gridSize;
+            const gridKey = `${gridLat},${gridLng}`;
+            
+            if (!gridCounts[gridKey]) {
+                gridCounts[gridKey] = 0;
+            }
+            gridCounts[gridKey]++;
+        }
+    });
+
+    for (let gridKey in gridCounts) {
+        const [gridLat, gridLng] = gridKey.split(',').map(Number);
+        const count = gridCounts[gridKey];
+        const color = getColor(count);
+
+        let rectangle = L.rectangle(
+            [[gridLat, gridLng], [gridLat + gridSize, gridLng + gridSize]],
+            { color: color, weight: 1 }
+        ).bindTooltip(`${count} recordings`).addTo(map);  // Change `leafletMap` to `map`
+
+        rectangles.push(rectangle);
+    }
+
+    updateVisibilityBasedOnZoom(map.getZoom());  // Change `leafletMap` to `map`
+});
+
+map.on('zoomend', function() {  // Change `leafletMap` to `map`
+    updateVisibilityBasedOnZoom(map.getZoom());  // Change `leafletMap` to `map`
+});
+
+function updateVisibilityBasedOnZoom(zoom) {
+    if (zoom > 8) {  // Adjust zoom level threshold as needed
+        rectangles.forEach(rect => rect.removeFrom(map));  // Change `leafletMap` to `map`
+        map.addLayer(markersCluster);  // Change `leafletMap` to `map`
+    } else {
+        markersCluster.removeFrom(map);  // Change `leafletMap` to `map`
+        rectangles.forEach(rect => rect.addTo(map));  // Change `leafletMap` to `map`
+    }
+}
+
+
+function getColor(count) {
+    if (count < 3) return 'blue';
+    if (count >= 3 && count < 8) return 'yellow';
+    if (count >= 8 && count < 15) return 'orange';
+    return 'red';
+}
+
+
+
+// Instantiate KMZ layer (async)
+var kmzLayer = L.kmzLayer().addTo(map);
+kmzLayer.load('Otus_scop.kmz');
+
+kmzLayer.on('loaded', function(e) {
+    map.fitBounds(e.target.getBounds());
+});
+
+function createLegend() {
+  const legend = L.control({ position: 'topleft' }); 
+
+    legend.onAdd = function(map) {
+      const div = L.DomUtil.create('div', 'legend');
+
+        // Define categories and colors
+        const categories = [
+            { label: '< 3 recordings', color: 'blue' },
+            { label: '3-7 recordings', color: 'yellow' },
+            { label: '8-14 recordings', color: 'orange' },
+            { label: '15+ recordings', color: 'red' }
+        ];
+
+        // Populate legend with categories
+        categories.forEach(category => {
+            div.innerHTML += `<div><span style="background-color:${category.color}; display: inline-block; width: 20px; height: 20px; margin-right: 5px;"></span> ${category.label}</div>`;
+        });
+
+        return div;
+    };
+
+    legend.addTo(map);
+}
+
+// Call the function to add the legend to the map
+createLegend();
+
+
+      </script>
+
+</body>
+
+
+
+
+</html>
