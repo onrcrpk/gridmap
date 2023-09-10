@@ -139,7 +139,7 @@ new L.basemapsSwitcher([
 let rectangles = [];
 let markersCluster = L.markerClusterGroup();  // Initialize the marker cluster group
 
-var kmzLayer = L.kmzLayer();
+var kmzLayer = L.kmzLayer().addTo(map);
 
 kmzLayer.on('loaded', function(e) {
     map.fitBounds(e.target.getBounds());
