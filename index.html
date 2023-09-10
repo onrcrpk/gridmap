@@ -258,7 +258,16 @@ function createLegend() {
 // Call the function to add the legend to the map
 createLegend();
 
+map.on('overlayadd', function(event) {
+    if(event.layer === kmzLayer) {
+        reOrderLayers();
+    }
+});
 
+function reOrderLayers() {
+    kmzLayer.bringToBack();
+    rectangles.forEach(rect => rect.bringToFront());
+}
 
 
       </script>
