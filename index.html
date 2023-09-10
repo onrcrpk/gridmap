@@ -137,6 +137,14 @@ new L.basemapsSwitcher([
 let rectangles = [];
 let markersCluster = L.markerClusterGroup();  // Initialize the marker cluster group
 
+// Instantiate KMZ layer (async)
+var kmzLayer = L.kmzLayer().addTo(map);
+kmzLayer.load('Otus_scop.kmz');
+
+kmzLayer.on('loaded', function(e) {
+    map.fitBounds(e.target.getBounds());
+});
+
 fetch('https://xeno-canto.org/api/2/recordings?query=otus%20scops')
 .then(response => response.json())
 .then(data => {
@@ -207,13 +215,7 @@ function getColor(count) {
 
 
 
-// Instantiate KMZ layer (async)
-var kmzLayer = L.kmzLayer().addTo(map);
-kmzLayer.load('Otus_scop.kmz');
 
-kmzLayer.on('loaded', function(e) {
-    map.fitBounds(e.target.getBounds());
-});
 
 function createLegend() {
   const legend = L.control({ position: 'topleft' }); 
@@ -224,7 +226,7 @@ function createLegend() {
         // Define categories and colors
         const categories = [
             { label: '< 3 recordings', color: 'blue' },
-            { label: '3-7 recordings', color: 'yellow' },
+            { label: '4-7 recordings', color: 'yellow' },
             { label: '8-14 recordings', color: 'orange' },
             { label: '15+ recordings', color: 'red' }
         ];
