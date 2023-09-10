@@ -192,26 +192,26 @@ fetch('https://xeno-canto.org/api/2/recordings?query=anser%20anser')
         let rectangle = L.rectangle(
             [[gridLat, gridLng], [gridLat + gridSize, gridLng + gridSize]],
             { color: color, weight: 1 }
-        ).bindTooltip(`${count} recordings`).addTo(map);  // Change `leafletMap` to `map`
-
+        ).bindTooltip(`${count} recordings`).addTo(map); 
         rectangles.push(rectangle);
     }
 
-    updateVisibilityBasedOnZoom(map.getZoom());  // Change `leafletMap` to `map`
+    updateVisibilityBasedOnZoom(map.getZoom()); 
 });
 
-map.on('zoomend', function() {  // Change `leafletMap` to `map`
-    updateVisibilityBasedOnZoom(map.getZoom());  // Change `leafletMap` to `map`
+rectangles.forEach(rect => rect.bringToFront());
+
+map.on('zoomend', function() { 
+    updateVisibilityBasedOnZoom(map.getZoom());  
 });
 
 function updateVisibilityBasedOnZoom(zoom) {
     if (zoom > 8) {  // Adjust zoom level threshold as needed
-        rectangles.forEach(rect => rect.removeFrom(map));  // Change `leafletMap` to `map`
-        map.addLayer(markersCluster);  // Change `leafletMap` to `map`
+        rectangles.forEach(rect => rect.removeFrom(map));  
+        map.addLayer(markersCluster); 
     } else {
-        markersCluster.removeFrom(map);  // Change `leafletMap` to `map`
-        rectangles.forEach(rect => rect.addTo(map));  // Change `leafletMap` to `map`
-    }
+        markersCluster.removeFrom(map);
+        rectangles.forEach(rect => rect.addTo(map)); 
 }
 
 
