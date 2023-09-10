@@ -139,7 +139,7 @@ let markersCluster = L.markerClusterGroup();  // Initialize the marker cluster g
 
 // Instantiate KMZ layer (async)
 var kmzLayer = L.kmzLayer().addTo(map);
-kmzLayer.load('Otus_scop.kmz');
+kmzLayer.load('otus.kmz');
 
 kmzLayer.on('loaded', function(e) {
     map.fitBounds(e.target.getBounds());
