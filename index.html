@@ -144,17 +144,20 @@ kmzLayer.bringToBack();
         
 kmzLayer.on('loaded', function(e) {
     map.fitBounds(e.target.getBounds());
+    kmzLayer.bringToBack();
 });
 
 kmzLayer.load('anser.kmz');
 
+        
 var overlayMaps = {
     "Species Ranges": kmzLayer
 };
 
 
 L.control.layers(null, overlayMaps).addTo(map);
-
+kmzLayer.bringToBack();
+        
 fetch('https://xeno-canto.org/api/2/recordings?query=anser%20anser')
 .then(response => response.json())
 .then(data => {
