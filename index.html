@@ -150,6 +150,7 @@ kmzLayer.load('anser.kmz');
 var overlayMaps = {
     "Species Ranges": kmzLayer
 };
+kmzLayer.bringToBack();
 
 L.control.layers(null, overlayMaps).addTo(map);
 
